@@ -1,35 +1,35 @@
-from PyPDF2 import PdfFileReader
+from PIL import Image
 import os
 
-local_doc = input(r"Onde está o arquivo?") #Localiza folder
-os.chdir(local_doc)#Define local
-lista_docs = os.listdir(local_doc)
+n = 0
+ignorar = {"PDF"}
+
+local_doc = input(r"Onde está o arquivo?")
+os.chdir(local_doc)
+
+destino = os.path.join(local_doc, "PDF")
+
+if "PDF" in os.listdir(local_doc):
+    pass
+else:
+    os.makedirs(destino)
+
+lista_docs = [x for x in os.listdir(local_doc) if x not in ignorar]
 
 def numero_docs():
     x = int(len(lista_docs))
     return(x)
 
+
 for i in range(0, numero_docs()):
-    print('[',i,']',lista_docs[i])
+    selecionado = os.listdir(local_doc)[n]
+    extencao = os.path.splitext(selecionado)[1]
+    selecionado_nom = os.path.splitext(selecionado)[0]
 
+    imagem = Image.open(local_doc + "\\" + selecionado)
+    img = imagem.convert('RGB')
+    img.save(local_doc + "\\" + selecionado_nom + ".pdf")
+    print(local_doc + "\\" + selecionado_nom + "_1" + ".pdf")
+    os.rename(local_doc + "\\" + selecionado_nom + ".pdf", destino + "\\" + selecionado_nom + ".pdf")
 
-selecao = int(input("Selecione : "))
-
-integral = os.listdir(local_doc)[selecao]
-
-#Funcao conta paginas
-def n_folhas(localdoc,x):
-    reader = PdfFileReader(integral)
-    folhas = reader.getNumPages()
-    return(folhas)   #Total de folhas
-
-def rename(diretorio,nome_old,nome_new):
-    for arquivos in os.listdir(diretorio):
-        os.rename(os.path.join(diretorio, arquivos), os.path.join(diretorio, arquivos.replace(nome_old, nome_new)))
-
-#N. de paginas no PDF selecionado
-folhas = n_folhas(local_doc,0)
-
-
-rename(local_doc, integral, "CÓPIA INTEGRAL. FLS. 1 A "+str(folhas)+'.pdf')
-print('Renomeado para: '+"CÓPIA INTEGRAL. FLS. 1 A "+str(folhas)+'.pdf')
+    n += 1
