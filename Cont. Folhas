@@ -35,22 +35,31 @@ class Handler(FileSystemEventHandler):
     def on_any_event(event):
         if event.is_directory:
             return None
+            
 
         elif event.event_type == 'modified':
-            # Taken any action here when a file is modified.
-            integral = os.listdir(local_doc)[0]
 
-            # Funcao conta paginas
-            def n_folhas():
-                reader = PdfFileReader(integral)
-                folhas = reader.getNumPages()
-                return folhas  # Total de folhas
+                if event.event_type == 'deleted':
+                    return None
 
-            def rename(diretorio, nome_old, nome_new):
-                for arquivos in os.listdir(diretorio):
-                    os.rename(os.path.join(diretorio, arquivos),
-                              os.path.join(diretorio, arquivos.replace(nome_old, nome_new)))
-            rename(local_doc, integral, "CÓPIA INTEGRAL. FLS. 1 A " + str(n_folhas()) + '.pdf')
+                else:
+                    time.sleep(0.1)                            # Programa estava tentando renomear DURANTE o processo de cópia.
+
+                    integral = os.listdir(local_doc)[0]
+
+                    def n_folhas():                             # Funcao conta paginas
+                        reader = PdfFileReader(integral)
+                        folhas = reader.getNumPages()
+                        return folhas  # Total de folhas
+
+                    def rename(diretorio, nome_old, nome_new):  #Função renomeia
+                        for arquivos in os.listdir(diretorio):
+                            os.rename(os.path.join(diretorio, arquivos),
+                                      os.path.join(diretorio, arquivos.replace(nome_old, nome_new)))
+                                      
+                    rename(local_doc, integral, "CÓPIA INTEGRAL. FLS. 1 A " + str(n_folhas()) + '.pdf')
+                    print("Done")
+
 
 if __name__ == '__main__':
     w = Watcher()
