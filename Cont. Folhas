@@ -5,12 +5,12 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-local_doc = r"C:\Users\Gabriel\Desktop\DOCS\RENOMEAR INTEGRAL"  # Localiza folder
+local_doc = input(r"Onde estará o arquivo?")  # Localiza folder
 os.chdir(local_doc)  # Define local
 
 
 class Watcher:
-    DIRECTORY_TO_WATCH = r"C:\Users\Gabriel\Desktop\DOCS\RENOMEAR INTEGRAL"
+    DIRECTORY_TO_WATCH = local_doc
 
     def __init__(self):
         self.observer = Observer()
@@ -39,6 +39,23 @@ class Handler(FileSystemEventHandler):
         elif event.event_type == 'created':
             integral = os.listdir(local_doc)[0]
 
+            def n_folhas():
+                reader = PdfFileReader(integral)
+                folhas = reader.getNumPages()
+                return folhas  # Total de folhas
+
+            def rename(diretorio, nome_old, nome_new):
+                for arquivos in os.listdir(diretorio):
+                    os.rename(os.path.join(diretorio, arquivos),
+                              os.path.join(diretorio, arquivos.replace(nome_old, nome_new)))
+            rename(local_doc, integral, "CÓPIA INTEGRAL. FLS. 1 A " + str(n_folhas()) + '.pdf')
+
+
+        elif event.event_type == 'modified':
+            # Taken any action here when a file is modified.
+            integral = os.listdir(local_doc)[0]
+
+            # Funcao conta paginas
             def n_folhas():
                 reader = PdfFileReader(integral)
                 folhas = reader.getNumPages()
